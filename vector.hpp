@@ -14,7 +14,7 @@ namespace ft {
             typedef typename const_reference    allocator_type::const_reference;
             typedef typename pointer            allocator_type:pointer;
             typedef typename const_pointer      allocator_type:const_pointer;
-            typedef iterator
+            typedef ft::iterator<ft::random_acc, >                
         protected:
         private:
     };
