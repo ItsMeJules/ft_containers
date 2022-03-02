@@ -4,7 +4,7 @@
 # include <cstddef>
 
 /*
-    All template and struct was found
+    All template and struct was found on cplusplus.com
 */
 
 namespace ft {
@@ -50,6 +50,24 @@ namespace ft {
         typedef const T&                          reference;
         typedef random_access_iterator_tag  iterator_category;
     };
+
+    template <class Iterator, class Container>
+    class regular_iterator :
+        public iterator<typename iterator_traits<Iterator>::iterator_category,
+                        typename iterator_traits<Iterator>::value_type,
+                        typename iterator_traits<Iterator>::difference_type,
+                        typename iterator_traits<Iterator>::pointer,
+                        typename iterator_traits<Iterator>::reference> {
+        private:
+        protected:
+            Iterator current_;
+        public:
+            typedef Iterator                                            iterator_type;
+            typedef Container                                           container_type;
+            typedef typename iterator_traits<Iterator>::difference_type difference_type;
+            typedef typename iterator_traits<Iterator>::pointer         pointer;
+            typedef typename iterator_traits<Iterator>::reference       reference;
+    }
 
 }
 
