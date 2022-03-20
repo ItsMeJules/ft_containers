@@ -6,7 +6,7 @@ SRC_DIR 	= 	srcs/
 SRC		 	=	$(notdir $(shell find $(SRC_DIR) -type f -name "*.cpp"))
 OBJ_DIR		=	obj
 OBJ 		= 	$(addprefix $(OBJ_DIR)/,$(SRC:.cpp=.o))
-INC_DIR		=	headers
+INC_DIR		=	.
 INC			=	$(shell find $(INC_DIR) -type f -name "*.hpp")
 IFLAGS 		=	-I $(INC_DIR)
 vpath			%.cpp $(shell find $(SRC_DIR) -type d)
