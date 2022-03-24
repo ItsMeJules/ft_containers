@@ -4,6 +4,7 @@
 # include <memory>
 # include "regular_iterator.hpp"
 # include "reverse_iterator.hpp"
+# include "type_traits.hpp"
 
 namespace ft {
 
@@ -111,12 +112,38 @@ namespace ft {
             
             /* MODIFIERS */
             template <class InputIterator>
-            void assign(InputIterator first, InputIterator last) {
+            void assign(InputIterator first, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last) {
+                for (iterator it = begin(); i != end(); it++)
+                    alloc_.destroy(&(*it));
 
+                size_type size = 0;
+                InputIterator tmp = first;
+                while (tmp != last) {
+                    tmp++;
+                    size++;
+                }
+                if (size >= capacity_) {
+                    alloc_.deallocate(start_, capacity_);
+                    capacity_ = size;
+                    pointer_ = alloc_.allocate(size);
+                }
+
+                size_ = 0;
+                for (InputIterator it = first; it != last; it++)
+                    push_back(*it);
             }
 
             void assign(size_type n, const value_type& val) {
-
+                for (iterator it = begin(); it != end(); it++)
+                    alloc_.destroy(&(*it));
+                if (n >= capacity_) {
+                    alloc_.deallocate(start_, capacity_);
+                    capacity_ = n;
+                    pointer_ = alloc_.allocate(n);
+                }
+                size_ = 0;
+                for (size_type i = 0; i < n; i++)
+                    push_back(val);
             }
 
             void push_back(const value_type& val) {
@@ -178,12 +205,35 @@ namespace ft {
 
 
             void insert(iterator position, size_type n, const value_type& val) {
+			    difference_type	diff = position - begin();
 
+				if (!n)
+					return ;
+				if (size_ + n > capacity_) {
+					if (size_ * 2 > size_ + n)
+						reserve(size_ * 2);
+					else
+						reserve(size_ + n);
+				}
+				while (n--)
+					insert(begin() + diff, val);
             }
 
             template <class InputIterator>
-            void insert(iterator position, InputIterator first, InputIterator last) {
-
+			void	insert(iterator position, InputIterator first, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type last) {
+                difference_type	diff = position - begin();
+				
+				difference_type len = 0;
+				for (InputIterator it = first; it != last; it++)
+					len++;
+				if (size_ + len > m_capacity) {
+					if (size_ * 2 > size_ + len)
+						reserve(size_ * 2);
+					else
+						reserve(size_ + len);
+				}
+				for (difference_type i = 0; first != last; first++, i++)
+					insert(begin() + diff + i, *first);
             }
 
         private:

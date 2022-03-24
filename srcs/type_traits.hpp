@@ -6,7 +6,7 @@ namespace ft {
     template <bool Cond, typename T = void>
     struct enable_if;
 
-    template<typename T>
+    template <typename T>
     struct enable_if<true, T> {
         typedef T type;
     };
@@ -25,43 +25,43 @@ namespace ft {
     typedef integral_constant<bool, true> true_type;
 	typedef integral_constant<bool, false> false_type;
 
-	template<typename T>
+	template <typename T>
 	struct is_integral : false_type {};
 
-	template<>
+	template <>
 	struct is_integral<bool> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<char> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<signed char> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<short int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<long int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<long long int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<unsigned char> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<unsigned short int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<unsigned int> : true_type {};
 
-	template<>
+	template <>
 	struct is_integral<unsigned long int> : true_type {};
     
-	template<>
+	template <>
 	struct is_integral<unsigned long long int> : true_type {};
 }
 
