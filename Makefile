@@ -29,7 +29,7 @@ init			:
 					
 $(NAME)			:	$(OBJ) $(INC)
 					@ echo "$(_INFO) Initialize $(NAME)"
-				 	@ $(CC) $(CFLAGS) $(IFLAGS) -o $(NAME) $(OBJ) $(COMP_LINUX) 
+				 	@ $(CC) $(CFLAGS) $(IFLAGS) -o $(NAME) $(OBJ)
 
 $(OBJ_DIR)/%.o	:	%.cpp
 					@ echo "\t$(_YELLOW)Compiling$(_RESET) $*.cpp\r\c"
