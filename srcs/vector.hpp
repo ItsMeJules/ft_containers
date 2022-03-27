@@ -5,6 +5,7 @@
 # include "iterators/regular_iterator.hpp"
 # include "iterators/reverse_iterator.hpp"
 # include "type_traits.hpp"
+# include "algorithm.hpp"
 
 namespace ft {
 
@@ -19,23 +20,23 @@ namespace ft {
             typedef typename allocator_type::pointer        	    pointer;
             typedef typename allocator_type::const_pointer  	    const_pointer;
 
-            typedef typename ft::regular_iterator<value_type>   	iterator;
-            typedef typename ft::regular_iterator<const value_type>	const_iterator;
+            typedef typename ft::regular_iterator<pointer>          iterator;
+            typedef typename ft::regular_iterator<const_pointer>	const_iterator;
             typedef typename ft::reverse_iterator<iterator>   		reverse_iterator;
             typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
             typedef	ptrdiff_t									    difference_type;
             typedef std::size_t									    size_type;
 
-            explicit vector(const allocator_type& alloc = allocator_type()) : alloc_(alloc), start_(NULL), size_(0), capacity_(0) {}
+            explicit vector(const allocator_type& alloc = allocator_type()) : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {}
             explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
-                : alloc_(alloc), size_(0), capacity_(0), start_(NULL) {
+                : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {
                     assign(n, val);
                 }
 
             template <class InputIterator>
             vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
-                : alloc_(alloc), size_(0), capacity_(0), start_(NULL) {
+                : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {
                     assign(first, last);
                 }
             vector(const vector& x) : start_(NULL), size_(0), capacity_(0), alloc_(x.alloc_) {
@@ -318,6 +319,44 @@ namespace ft {
             allocator_type alloc_;
         protected:
     };
+    
+	template <typename T, typename Alloc>
+	bool operator==(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		if (lhs.size() == rhs.size())
+			return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		else
+			return false;
+	}
+
+	template <typename T, typename Alloc>
+  	bool operator!=(const vector<T, Alloc>& lhs, const vector<T,Alloc>& rhs) {
+		return !(lhs == rhs);
+	}
+
+	template <typename T, typename Alloc>
+  	bool operator<(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
+
+	template <typename T, typename Alloc>
+	bool operator<=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return !(rhs < lhs);
+	}
+
+	template <typename T, typename Alloc>
+ 	bool operator>(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return rhs < lhs;
+	}
+
+	template <typename T, typename Alloc>
+ 	bool operator>=(const vector<T, Alloc>& lhs, const vector<T, Alloc>& rhs) {
+		return !(lhs < rhs);
+	}
+
+	template <typename T, typename Alloc>
+	void swap(vector<T, Alloc>& x, vector<T, Alloc>& y) {
+		x.swap(y);
+	}
 }
 
 #endif

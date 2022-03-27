@@ -1,6 +1,7 @@
 #ifndef REVERSE_ITERATOR_HPP
 # define REVERSE_ITERATOR_HPP
 
+#include <typeinfo>
 # include "regular_iterator.hpp"
 
 namespace ft {
@@ -22,44 +23,50 @@ namespace ft {
 			reverse_iterator(const reverse_iterator<Iter>& it) : super_class::regular_iterator(it.base()) {}
 			~reverse_iterator() {}
 
-			reverse_iterator operator+(difference_type n) const {
+			reference operator*() const {
+				Iterator it = super_class::current_;
+
+				return *(--it);
+			}
+
+			super_class operator+(difference_type n) const {
 				return reverse_iterator(super_class::current_ - n);
 			}
 
-			reverse_iterator& operator++() {
+			super_class& operator++() {
 				super_class::current_--;
 				return *this;
 			}
 
-			reverse_iterator operator++(int) {
+			super_class operator++(int) {
 				reverse_iterator temp(*this);
 
-				--(*this);
+				super_class::current_--;
 				return temp;
 			}
 
-			reverse_iterator& operator+=(difference_type n) {
+			super_class& operator+=(difference_type n) {
 				super_class::current_ -= n;
 				return *this;
 			}
 
-			reverse_iterator operator-(difference_type n) const {
+			super_class operator-(difference_type n) const {
 				return reverse_iterator(super_class::current_ + n);
 			}
 
-			reverse_iterator& operator--() {
+			super_class& operator--() {
 				super_class::current_++;
 				return *this;
 			}
 
-			reverse_iterator operator--(int) {
+			super_class operator--(int) {
 				reverse_iterator temp(*this);
 
 				++(*this);
 				return temp;
 			}
 
-			reverse_iterator& operator-=(difference_type n) {
+			super_class& operator-=(difference_type n) {
 				super_class::current_ += n;
 				return *this;
 			}

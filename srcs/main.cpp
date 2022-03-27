@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <typeinfo>
 #include "vector.hpp"
 
 #define C_YELLOW "\e[33m"
@@ -16,7 +17,7 @@ int main() {
   			ft::vector<int> fourth (third);                       // a copy of third
 
   			int myints[] = {16,2,77,29};
- 			ft::vector<int> fifth (myints, myints + sizeof(myints) / sizeof(int) );
+ 			ft::vector<int> fifth(myints, myints + sizeof(myints) / sizeof(int) );
   			std::cout << "The contents of fifth are:";
   			for (ft::vector<int>::iterator it = fifth.begin(); it != fifth.end(); ++it)
    				std::cout << ' ' << *it;
@@ -100,7 +101,7 @@ int main() {
 
 			int i=0;
 			ft::vector<int>::reverse_iterator rit = myvector.rbegin();
-			for (; rit!= myvector.rend(); ++rit)
+			for (; rit != myvector.rend(); ++rit)
 				*rit = ++i;
 			std::cout << "myvector contains:";
 			for (ft::vector<int>::iterator it = myvector.begin(); it != myvector.end(); ++it)
@@ -109,7 +110,7 @@ int main() {
 		}
 		std::cout << std::endl << C_YELLOW << "VECTOR::REND" << C_RESET << std::endl;
 		{
-			 ft::vector<int> myvector (5);  // 5 default-constructed ints
+			ft::vector<int> myvector (5);  // 5 default-constructed ints
 
 			ft::vector<int>::reverse_iterator rit = myvector.rbegin();
 			int i=0;
@@ -330,7 +331,7 @@ int main() {
 			ft::vector<int> foo (3,100);   // three ints with a value of 100
 			ft::vector<int> bar (5,200);   // five ints with a value of 200
 
-			foo.swap(bar);
+			ft::swap(bar, foo);
 			std::cout << "foo contains:";
 			for (ft::vector<int>::iterator it = foo.begin(); it!=foo.end(); ++it)
 				std::cout << ' ' << *it;
@@ -347,7 +348,7 @@ int main() {
 
 			if (foo==bar) std::cout << "foo and bar are equal\n";
 			if (foo!=bar) std::cout << "foo and bar are not equal\n";
-			if (foo< bar) std::cout << "foo is less than bar\n";
+			if (foo < bar) std::cout << "foo is less than bar\n";
 			if (foo> bar) std::cout << "foo is greater than bar\n";
 			if (foo<=bar) std::cout << "foo is less than or equal to bar\n";
 			if (foo>=bar) std::cout << "foo is greater than or equal to bar\n";

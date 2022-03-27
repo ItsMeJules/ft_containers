@@ -31,7 +31,7 @@ namespace ft {
                 return current_;
             }
 
-            reference operator*() const {
+            virtual reference operator*() const {
                 return *current_;
             }
 
@@ -72,7 +72,7 @@ namespace ft {
             virtual regular_iterator operator--(int) {
                 regular_iterator temp(*this);
 
-                --(*this);
+                current_--;
                 return temp;
             }
 
@@ -115,6 +115,16 @@ namespace ft {
     bool operator>=(const regular_iterator<IteratorL>& x, const regular_iterator<IteratorR>& y) {
         return x.base() >= y.base();
     }
+
+	template <typename IteratorL, typename IteratorR>
+	typename regular_iterator<IteratorL>::difference_type operator-(const regular_iterator<IteratorL>& lhs, const regular_iterator<IteratorR>& rhs) {
+		return (lhs.base() - rhs.base());
+	}
+
+	template <typename Iterator>
+	regular_iterator<Iterator> operator+(typename regular_iterator<Iterator>::difference_type n, const regular_iterator<Iterator>& it) {
+		return (regular_iterator<Iterator>(it.base() + n));
+	}
 }
 
 #endif
