@@ -4,8 +4,8 @@
 # include <memory>
 # include "iterators/regular_iterator.hpp"
 # include "iterators/reverse_iterator.hpp"
-# include "type_traits.hpp"
-# include "algorithm.hpp"
+# include "utils/type_traits.hpp"
+# include "utils/algorithm.hpp"
 
 namespace ft {
 

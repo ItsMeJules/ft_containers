@@ -31,14 +31,14 @@ namespace ft {
                 return current_;
             }
 
-            virtual reference operator*() const {
-                return *current_;
-            }
-
             pointer operator->() const {
                 return &(operator*());
             }
 
+            virtual reference operator*() const {
+                return *current_;
+            }
+            
             virtual regular_iterator operator+(difference_type n) const {
                 return regular_iterator(current_ + n);
             }
