@@ -1,7 +1,6 @@
 #ifndef MAP_HPP
 # define MAP_HPP
 
-# include <functional>
 # include <memory>
 # include "utils/utility.hpp"
 # include "iterators/regular_iterator.hpp"
