@@ -197,10 +197,11 @@ namespace ft {
 			}
 
 			bool operator==(const rb_tree_const_iterator & x) const {
-				return (m_current == x.m_current);
+				return current_ == x.current_;
 			}
+
 			bool operator!=(const rb_tree_const_iterator & x) const {
-				return (m_current != x.m_current);
+				return current_ != x.current_;
 			}
 		protected:
 			iterator_type *current_;
