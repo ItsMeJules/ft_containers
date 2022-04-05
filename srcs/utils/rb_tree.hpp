@@ -107,6 +107,41 @@ namespace ft {
             node_allocator_type node_alloc_;
             comp compare_type_;
 
+			node_type *new_node(const value_type data, const bool black) {
+				node_type *node = NULL;
+				
+				try {
+					node = node_alloc_.allocate(1);
+					value_alloc_.construct(&node->data_, data);
+					node->black = black;
+					node->parent = NULL;
+					node->left = NULL;
+					node->right = NULL;
+				} catch (std::bad_alloc& e) {
+					destroyNode(node);
+					node = NULL;
+					std::cout << "Error when trying to make a new node.\n" << e.what() << std::endl;
+				}
+				return node;
+			}
+
+			void destroyNode(node_type *node) {
+				if (node) {
+					value_alloc_.destroy(&node->data_);
+					node_alloc_.deallocate(node, 1);
+				}
+			}
+
+			void rbTransplant(node_type *u, node_type *v) {
+				if (u->parent == NULL)
+					root_ = v;
+				else if (u == u->parent->left)
+					u->parent->left = v;
+				else
+					u->parent->right = v;
+				v->parent = u->parent;
+			}
+
             void rotateLeft(node_type *x) {
                 node_type *y = x->right_;
 
@@ -228,8 +263,10 @@ namespace ft {
 			size_type nodesAmount(node_type *root) const {
 				if (!root)
 					return 0;
-				return 1 + _size(root->left) + _size(root->right);
+				return 1 + nodesAmount(root->left) + nodesAmount(root->right);
 			}
+
+
     };
 
 
