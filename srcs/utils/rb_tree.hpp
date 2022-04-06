@@ -26,6 +26,7 @@ namespace ft {
     };
 
     // https://www.programiz.com/dsa/red-black-tree
+	// This website carried me like Sam carries Frodo
     template <typename T, typename Compare = ft::less<T>, typename Alloc = std::allocator<T> >
     class rb_btree {
         public:
@@ -153,7 +154,39 @@ namespace ft {
 				}
 			}
 
-			void deleteNode(node_type *node) {
+			void deleteNode(node_type *z) {
+				node_type *x;
+    			node_type *y = z;
+    			int blackTmp = y->black_;
+
+    			if (!z->left) {
+        			x = z->right;
+        			rbTransplant(z, z->right);
+    			} else if (!z->right) {
+     		   		x = z->left;
+        			rbTransplant(z, z->left);
+    			} else {
+        			y = min(z->right);
+        			blackTmp = y->color;
+        			x = y->right;
+        			if (x && y->parent == z)
+            			x->parent = y;
+        			else if (y->parent != z) {
+            			rbTransplant(y, y->right);
+            			y->right = z->right;
+            			y->right->parent = y;
+        			}	
+        			rbTransplant(z, y);
+        			y->left = z->left;
+        			y->left->parent = y;
+        			y->color = z->color;
+    			}
+    			if (blackTmp == 1)
+    		    	deleteFix(x); 
+    			destroyNode(z);
+			}
+
+			void deleteFix(node_type *node) {
 				
 			}
 
