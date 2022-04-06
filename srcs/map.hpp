@@ -3,11 +3,12 @@
 
 # include <memory>
 # include "utils/utility.hpp"
+# include "utils/functional.hpp"
 # include "iterators/regular_iterator.hpp"
 
 namespace ft {
 	template <typename Key, typename T,
-		typename Compare = std::less<Key>,
+		typename Compare = ft::less<Key>,
 		typename Alloc = std::allocator<ft::pair<const Key, T> > >
 	class map {
 		public:
@@ -34,7 +35,7 @@ namespace ft {
 
 					value_compare(key_compare c = key_compare()) : comp(c) {}
 
-					bool operator()(const value_type & x, const value_type & y) const {
+					bool operator()(const value_type& x, const value_type& y) const {
 						return comp(x.first, y.first);
 					}
 			};

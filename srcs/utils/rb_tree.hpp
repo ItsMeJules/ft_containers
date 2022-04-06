@@ -77,6 +77,16 @@ namespace ft {
 				return const_reverse_iterator(begin());
 			}
 
+			value_type min() const {
+				if (!root_)
+					return (NULL);
+
+				node_type *tmp = root_;
+				while (tmp->left)
+					tmp = tmp->left;
+				return (tmp->data_);
+			}
+
 			allocator_type get_allocator() const {
 				return value_alloc_;
 			}
@@ -107,7 +117,18 @@ namespace ft {
             node_allocator_type node_alloc_;
             comp compare_type_;
 
-			node_type *new_node(const value_type data, const bool black) {
+			node_type *findNode(node_type *root, const value_type& val) const {
+				if (!root)
+					return NULL;
+				if (compare_type_(val, root->data))
+					return findNode(root->left_, val);
+				else if (compare_type_(root->data, val))
+					return findNode(root->right_, val);
+				else
+					return root;
+			}
+
+			node_type *newNode(const value_type data, const bool black) {
 				node_type *node = NULL;
 				
 				try {
@@ -130,6 +151,10 @@ namespace ft {
 					value_alloc_.destroy(&node->data_);
 					node_alloc_.deallocate(node, 1);
 				}
+			}
+
+			void deleteNode(node_type *node) {
+				
 			}
 
 			void rbTransplant(node_type *u, node_type *v) {
