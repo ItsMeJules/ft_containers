@@ -46,6 +46,103 @@ namespace ft {
 			typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 			typedef	size_t														size_type;
 
+		private:
+			node_type *root_;
+            /*
+            * This node is the end of the tree.
+            * When you run through it using iterators it will end up going back to the root parent's node.
+            */
+            node_type *end_;
+            allocator_type value_alloc_;
+            node_allocator_type node_alloc_;
+            comp compare_type_;
+
+		public:
+			rb_btree(const comp& c = comp(), const allocator_type& value_alloc = allocator_type(), const node_allocator_type& n_alloc = node_allocator_type())
+				: root_(NULL), end_(newNode(value_type())), node_alloc_(n_alloc), value_alloc_(value_alloc), compare_type_(c)
+			{}
+
+			rb_btree(const btree& src)
+				: root_(NULL), end_(newNode(value_type())), value_alloc_(src.value_alloc_), node_alloc_(src.node_alloc_), compare_type_(src.compare_type_)
+			{
+				insert(src.begin(), src.end());
+			}
+
+			~rb_btree() {
+				clear();
+				destroyNode(end_);
+			}
+
+			// MODIFIERS
+			iterator insert(const value_type& value) {
+				if (root_ == NULL) {
+					root_ = newNode(value, 1);
+					updateRootEnd();
+					return iterator(root_);
+				} else {
+					root_->parent_ = NULL;
+					node_type *node = newNode(value, 0);
+					insertNode(node);
+					updateRootEnd();
+					return find(value);
+				}
+			}
+
+			iterator insert(iterator position, const value_type& value) {
+				(void)position;
+				return insert(value);
+			}
+
+			size_type erase(const value_type& value) {
+				size_type amount = 0;
+				node_type *node = findNode(root_, value);
+
+				root_->parent = NULL;
+				while (node) {
+					deleteNode(node);
+					amount++;
+					node = findNode(root_, value);
+				}
+				updateRootEnd();
+				return amount;
+			}
+
+			void erase(iterator position) {
+				node_type *node = position.base();
+
+				if (node && node != end_) {
+					root_->parent = NULL;
+					deleteNode(node);
+					updateRootEnd();
+				}
+			}
+			
+			void erase(iterator first, iterator last) {
+				while (first != last)
+					erase(first++);
+			}
+
+			void swap(btree & x) {
+				node_type *tmpr = root_;
+				node_type *tmpe = end_;
+
+				root_ = x.root_;
+				end_ = x.end_;
+				x.root_ = tmpr;
+				x.end_ = tmpe;
+			}
+
+			void clear(void) {
+				if (root_) {
+					clearTree(root_);
+					root_ = NULL;
+					end_->parent = NULL;
+					end_->left = NULL;
+					end_->right = NULL;
+				}
+			}
+
+			// ITERATORS
             iterator begin(void) {
                 return (root_ ? iterator(leftMostNode(root_)) : end());
 			}
@@ -88,6 +185,7 @@ namespace ft {
 				return (tmp->data_);
 			}
 
+			// GETTERS
 			allocator_type get_allocator() const {
 				return value_alloc_;
 			}
@@ -96,6 +194,7 @@ namespace ft {
 				return compare_type_;
 			}
 
+			// CAPACITY
 			bool empty(void) const {
 				return (root_ ? false : true);
 			}
@@ -107,17 +206,24 @@ namespace ft {
 			size_type max_size(void) const {
 				return node_alloc_.max_size();
 			}
-        private:
-            node_type *root_;
-            /*
-            * This node is the end of the tree.
-            * When you run through it using iterators it will end up going back to the root parent's node.
-            */
-            node_type *end_;
-            allocator_type value_alloc_;
-            node_allocator_type node_alloc_;
-            comp compare_type_;
 
+        private:
+			void updateRootEnd() {
+				end_->parent_ = root_;
+				end_->left_ = root_;
+				end_->right_ = root_;
+				if (root_)
+					root_->parent = end_;
+			}
+
+			void clearTree(node_type *root) {
+				if (!root)
+					return;
+				clearTree(root->left_);
+				clearTree(root->right_);
+				destroyNode(root);
+			}
+			
 			node_type *findNode(node_type *root, const value_type& val) const {
 				if (!root)
 					return NULL;
@@ -187,7 +293,61 @@ namespace ft {
 			}
 
 			void deleteFix(node_type *node) {
-				
+				node_type *s = NULL;
+
+				while (node && node != root_ && node->black_ == 1) {
+        			if (node == node->parent->left) {
+
+            			s = node->parent->right;
+            			if (s->black_ == 0) {
+                			s->black_ = 1;
+                			node->parent->black_ = 0;
+                			rotateLeft(node->parent);
+                			s = node->parent->right;
+            			}
+            			if (s->left->black_ == 1 && s->right->black_ == 1) {
+            				s->black_ = 0;
+            	    		node = node->parent;
+            			} else if (s->right->black_ == 1) {
+            			    s->left->black_ = 1;
+            			    s->black_ = 0;
+            			    rotateRight(s);
+            			    s = node->parent->right;
+            			} else {
+            				s->black_ = node->parent->black_;
+                			node->parent->black_ = 1;
+                			s->right->black_ = 1;
+                			rotateLeft(node->parent);
+                			node = root_;
+            			}
+        			} else {
+						
+            			s = node->parent->left;
+            			if (s->black_ == 0) {
+            			    s->black_ = 1;
+            			    node->parent->black_ = 0;
+            			    rotateRight(node->parent);
+            			    s = node->parent->left;
+            			}
+            			if (s->right->black_ == 1 && s->left->black_ == 1) {
+            				s->black_ = 0;
+                			node = node->parent;
+            			} else if (s->left->black_ == 1) {
+            			    s->right->black_ = 1;
+            			    s->black_ = 0;
+            			    rotateLeft(s);
+           		 		    s = node->parent->left;
+            			} else {
+            			    s->black_ = node->parent->black_;
+            			    node->parent->black_ = 1;
+            			    s->left->black_ = 1;
+            			    rotateRight(node->parent);
+            			    node = root_;
+            			}
+        			}
+    			}
+				if (node)
+    				node->black_ = 1;
 			}
 
 			void rbTransplant(node_type *u, node_type *v) {

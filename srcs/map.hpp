@@ -5,6 +5,7 @@
 # include "utils/utility.hpp"
 # include "utils/functional.hpp"
 # include "iterators/regular_iterator.hpp"
+# include "iterators/reverse_iterator.hpp"
 
 namespace ft {
 	template <typename Key, typename T,
