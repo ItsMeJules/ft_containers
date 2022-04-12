@@ -62,15 +62,26 @@ namespace ft {
 				: root_(NULL), end_(newNode(value_type())), node_alloc_(n_alloc), value_alloc_(value_alloc), compare_type_(c)
 			{}
 
-			rb_btree(const btree& src)
+			rb_btree(const rb_btree& src)
 				: root_(NULL), end_(newNode(value_type())), value_alloc_(src.value_alloc_), node_alloc_(src.node_alloc_), compare_type_(src.compare_type_)
 			{
-				insert(src.begin(), src.end());
+				for (iterator it = src.begin(); it != src.end(); it++)
+					insert(*it);
 			}
 
 			~rb_btree() {
 				clear();
 				destroyNode(end_);
+			}
+
+			//OPERATOR
+			rb_btree& operator=(const rb_btree& x) {
+				if (this != &x) {
+					clear();
+					for (iterator it = x.begin(); it != x.end(); it++)
+						insert(*it);
+				}
+				return *this;
 			}
 
 			// MODIFIERS
@@ -122,7 +133,7 @@ namespace ft {
 					erase(first++);
 			}
 
-			void swap(btree & x) {
+			void swap(rb_btree & x) {
 				node_type *tmpr = root_;
 				node_type *tmpe = end_;
 
@@ -183,6 +194,18 @@ namespace ft {
 				while (tmp->left)
 					tmp = tmp->left;
 				return (tmp->data_);
+			}
+
+			iterator find(const value_type& value) const {
+				node_type *node = findNode(root_, value);
+	
+				return (node ? iterator(node) : end());
+			}
+
+			const_iterator find(const value_type& value) {
+				node_type *node = findNode(root_, value);
+	
+				return (node ? const_iterator(node) : end());
 			}
 
 			// GETTERS
@@ -397,8 +420,8 @@ namespace ft {
             }
 
             void insertNode(node_type *n) {
-				node_type	*y = NULL;
-				node_type	*temp = root_;
+				node_type *y = NULL;
+				node_type *temp = root_;
 
 				while (temp) {
   					y = temp;
