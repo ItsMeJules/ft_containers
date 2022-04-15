@@ -3,27 +3,10 @@
 
 # include <memory>
 # include "functional.hpp"
-# include "ft_containers/srcs/iterators/rb_tree_iterator.hpp"
-# include "ft_containers/srcs/iterators/reverse_iterator.hpp"
+# include "../iterators/rb_tree_iterator.hpp"
+# include "../iterators/reverse_iterator.hpp"
 
 namespace ft {
-
-    template <typename T>
-    class rb_node {
-        T data_;
-
-        rb_node *right_;
-        rb_node *left_;
-        rb_node *parent_;
-        bool black_;
-
-        rb_node(const bool black, const T data, Node *right = NULL, Node *left = NULL) 
-            : black_(black), data_(data), right_(right), left_(left)
-        {
-            if (right_ != NULL) right_->parent_ = this;
-            if (left_ != NULL) left_->parent_ = this;
-        }
-    };
 
     // https://www.programiz.com/dsa/red-black-tree
 	// This website carried me like Sam carries Frodo
@@ -39,8 +22,8 @@ namespace ft {
 			typedef typename allocator_type::const_reference					const_reference;
 			typedef typename allocator_type::pointer							pointer;
 			typedef typename allocator_type::const_pointer						const_pointer;			
-			typedef	rb_btree<value_type>									    iterator;
-			typedef	rb_tree_const_iterator<value_type>							const_iterator;
+			typedef ft::rb_tree_iterator<value_type>				 			iterator;
+			typedef ft::rb_tree_const_iterator<value_type>						const_iterator;
 			typedef	ft::reverse_iterator<iterator>								reverse_iterator;
 			typedef	ft::reverse_iterator<const_iterator>						const_reverse_iterator;
 			typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
@@ -59,13 +42,13 @@ namespace ft {
 
 		public:
 			rb_btree(const comp& c = comp(), const allocator_type& value_alloc = allocator_type(), const node_allocator_type& n_alloc = node_allocator_type())
-				: root_(NULL), end_(newNode(value_type())), node_alloc_(n_alloc), value_alloc_(value_alloc), compare_type_(c)
+				: root_(NULL), end_(newNode(value_type(), 0)), value_alloc_(value_alloc), node_alloc_(n_alloc), compare_type_(c)
 			{}
 
 			rb_btree(const rb_btree& src)
-				: root_(NULL), end_(newNode(value_type())), value_alloc_(src.value_alloc_), node_alloc_(src.node_alloc_), compare_type_(src.compare_type_)
+				: root_(NULL), end_(newNode(value_type(), 0)), value_alloc_(src.value_alloc_), node_alloc_(src.node_alloc_), compare_type_(src.compare_type_)
 			{
-				for (iterator it = src.begin(); it != src.end(); it++)
+				for (const_iterator it = src.begin(); it != src.end(); it++)
 					insert(*it);
 			}
 
@@ -78,7 +61,7 @@ namespace ft {
 			rb_btree& operator=(const rb_btree& x) {
 				if (this != &x) {
 					clear();
-					for (iterator it = x.begin(); it != x.end(); it++)
+					for (const_iterator it = x.begin(); it != x.end(); it++)
 						insert(*it);
 				}
 				return *this;
@@ -147,9 +130,9 @@ namespace ft {
 				if (root_) {
 					clearTree(root_);
 					root_ = NULL;
-					end_->parent = NULL;
-					end_->left = NULL;
-					end_->right = NULL;
+					end_->parent_ = NULL;
+					end_->left_ = NULL;
+					end_->right_ = NULL;
 				}
 			}
 
@@ -196,13 +179,13 @@ namespace ft {
 				return (tmp->data_);
 			}
 
-			iterator find(const value_type& value) const {
+			iterator find(const value_type& value) {
 				node_type *node = findNode(root_, value);
 	
 				return (node ? iterator(node) : end());
 			}
 
-			const_iterator find(const value_type& value) {
+			const_iterator find(const value_type& value) const {
 				node_type *node = findNode(root_, value);
 	
 				return (node ? const_iterator(node) : end());
@@ -213,7 +196,7 @@ namespace ft {
 				return value_alloc_;
 			}
 
-			compare_type get_comparator() const {
+			comp get_comparator() const {
 				return compare_type_;
 			}
 
@@ -231,12 +214,20 @@ namespace ft {
 			}
 
         private:
+			node_type *leftMostNode(node_type *node) const {
+				if (!node)
+					return (NULL);
+				while (node->left_)
+					node = node->left_;
+				return (node);
+			}
+
 			void updateRootEnd() {
 				end_->parent_ = root_;
 				end_->left_ = root_;
 				end_->right_ = root_;
 				if (root_)
-					root_->parent = end_;
+					root_->parent_ = end_;
 			}
 
 			void clearTree(node_type *root) {
@@ -250,9 +241,9 @@ namespace ft {
 			node_type *findNode(node_type *root, const value_type& val) const {
 				if (!root)
 					return NULL;
-				if (compare_type_(val, root->data))
+				if (compare_type_(val, root->data_))
 					return findNode(root->left_, val);
-				else if (compare_type_(root->data, val))
+				else if (compare_type_(root->data_, val))
 					return findNode(root->right_, val);
 				else
 					return root;
@@ -264,10 +255,10 @@ namespace ft {
 				try {
 					node = node_alloc_.allocate(1);
 					value_alloc_.construct(&node->data_, data);
-					node->black = black;
-					node->parent = NULL;
-					node->left = NULL;
-					node->right = NULL;
+					node->black_ = black;
+					node->parent_ = NULL;
+					node->left_ = NULL;
+					node->right_ = NULL;
 				} catch (std::bad_alloc& e) {
 					destroyNode(node);
 					node = NULL;
@@ -290,24 +281,24 @@ namespace ft {
 
     			if (!z->left) {
         			x = z->right;
-        			rbTransplant(z, z->right);
-    			} else if (!z->right) {
+        			rbTransplant(z, z->right_);
+    			} else if (!z->right_) {
      		   		x = z->left;
         			rbTransplant(z, z->left);
     			} else {
-        			y = min(z->right);
+        			y = min(z->right_);
         			blackTmp = y->color;
-        			x = y->right;
-        			if (x && y->parent == z)
-            			x->parent = y;
-        			else if (y->parent != z) {
-            			rbTransplant(y, y->right);
-            			y->right = z->right;
-            			y->right->parent = y;
+        			x = y->right_;
+        			if (x && y->parent_ == z)
+            			x->parent_ = y;
+        			else if (y->parent_ != z) {
+            			rbTransplant(y, y->right_);
+            			y->right_ = z->right_;
+            			y->right_->parent_ = y;
         			}	
         			rbTransplant(z, y);
         			y->left = z->left;
-        			y->left->parent = y;
+        			y->left->parent_ = y;
         			y->color = z->color;
     			}
     			if (blackTmp == 1)
@@ -319,52 +310,52 @@ namespace ft {
 				node_type *s = NULL;
 
 				while (node && node != root_ && node->black_ == 1) {
-        			if (node == node->parent->left) {
+        			if (node == node->parent_->left) {
 
-            			s = node->parent->right;
+            			s = node->parent_->right_;
             			if (s->black_ == 0) {
                 			s->black_ = 1;
-                			node->parent->black_ = 0;
-                			rotateLeft(node->parent);
-                			s = node->parent->right;
+                			node->parent_->black_ = 0;
+                			rotateLeft(node->parent_);
+                			s = node->parent_->right_;
             			}
-            			if (s->left->black_ == 1 && s->right->black_ == 1) {
+            			if (s->left->black_ == 1 && s->right_->black_ == 1) {
             				s->black_ = 0;
-            	    		node = node->parent;
-            			} else if (s->right->black_ == 1) {
-            			    s->left->black_ = 1;
+            	    		node = node->parent_;
+            			} else if (s->right_->black_ == 1) {
+            			    s->left_->black_ = 1;
             			    s->black_ = 0;
             			    rotateRight(s);
-            			    s = node->parent->right;
+            			    s = node->parent_->right_;
             			} else {
-            				s->black_ = node->parent->black_;
-                			node->parent->black_ = 1;
-                			s->right->black_ = 1;
-                			rotateLeft(node->parent);
+            				s->black_ = node->parent_->black_;
+                			node->parent_->black_ = 1;
+                			s->right_->black_ = 1;
+                			rotateLeft(node->parent_);
                 			node = root_;
             			}
         			} else {
 						
-            			s = node->parent->left;
+            			s = node->parent_->left_;
             			if (s->black_ == 0) {
             			    s->black_ = 1;
-            			    node->parent->black_ = 0;
-            			    rotateRight(node->parent);
-            			    s = node->parent->left;
+            			    node->parent_->black_ = 0;
+            			    rotateRight(node->parent_);
+            			    s = node->parent_->left_;
             			}
-            			if (s->right->black_ == 1 && s->left->black_ == 1) {
+            			if (s->right->black_ == 1 && s->left_->black_ == 1) {
             				s->black_ = 0;
-                			node = node->parent;
-            			} else if (s->left->black_ == 1) {
+                			node = node->parent_;
+            			} else if (s->left_->black_ == 1) {
             			    s->right->black_ = 1;
             			    s->black_ = 0;
             			    rotateLeft(s);
-           		 		    s = node->parent->left;
+           		 		    s = node->parent_->left_;
             			} else {
-            			    s->black_ = node->parent->black_;
-            			    node->parent->black_ = 1;
-            			    s->left->black_ = 1;
-            			    rotateRight(node->parent);
+            			    s->black_ = node->parent_->black_;
+            			    node->parent_->black_ = 1;
+            			    s->left_->black_ = 1;
+            			    rotateRight(node->parent_);
             			    node = root_;
             			}
         			}
@@ -374,13 +365,13 @@ namespace ft {
 			}
 
 			void rbTransplant(node_type *u, node_type *v) {
-				if (u->parent == NULL)
+				if (u->parent_ == NULL)
 					root_ = v;
-				else if (u == u->parent->left)
-					u->parent->left = v;
+				else if (u == u->parent_->left)
+					u->parent_->left = v;
 				else
-					u->parent->right = v;
-				v->parent = u->parent;
+					u->parent_->right = v;
+				v->parent_ = u->parent_;
 			}
 
             void rotateLeft(node_type *x) {
@@ -390,33 +381,33 @@ namespace ft {
                 if (y->left_ != NULL)
                     y->left_->parent_ = x;
 
-                y->parent = x->parent;
-                if (x->parent == NULL)
-                    this->root = y;
-                else if (x == x->parent->left)
-                    x->parent->left = y;
+                y->parent_ = x->parent_;
+                if (x->parent_ == NULL)
+                    this->root_ = y;
+                else if (x == x->parent_->left_)
+                    x->parent_->left_ = y;
                 else
-                    x->parent->right = y;
-                y->left = x;
-                x->parent = y;
+                    x->parent_->right_ = y;
+                y->left_ = x;
+                x->parent_ = y;
             }
 
             void rotateRight(node_type *x) {
-                node_type *y = x->left;
+                node_type *y = x->left_;
                 
-                x->left = y->right;
-                if (y->right != NULL)
-                    y->right->parent = x;
+                x->left_ = y->right_;
+                if (y->right_ != NULL)
+                    y->right_->parent_ = x;
 
-                y->parent = x->parent;
-                if (x->parent == nullptr)
-                    this->root = y;
-                else if (x == x->parent->right)
-                    x->parent->right = y;
+                y->parent_ = x->parent_;
+                if (x->parent_ == NULL)
+                    this->root_ = y;
+                else if (x == x->parent_->right_)
+                    x->parent_->right_ = y;
                 else
-                    x->parent->left = y;
-                y->right = x;
-                x->parent = y;
+                    x->parent_->left_ = y;
+                y->right_ = x;
+                x->parent_ = y;
             }
 
             void insertNode(node_type *n) {
@@ -425,21 +416,21 @@ namespace ft {
 
 				while (temp) {
   					y = temp;
-					if (comp(z->value, temp->value))
-    					temp = temp->left;
+					if (compare_type_(n->data_, temp->data_))
+    					temp = temp->left_;
   					else
-    					temp = temp->right;
+    					temp = temp->right_;
 				}
-				z->parent = y;
+				n->parent_ = y;
 				if (!y)
- 					root_ = z;
-				else if (comp(z->value, y->value))
-  					y->left = z;
+ 					root_ = n;
+				else if (compare_type_(n->data_, y->data_))
+  					y->left_ = n;
 				else
-					y->right = z;
-				z->right = NULL;
-				z->left = NULL;
-				insertFix(z);
+					y->right_ = n;
+				n->right_ = NULL;
+				n->left_ = NULL;
+				insertFix(n);
 			}
 
             void insertFix(node_type *n) {
@@ -448,23 +439,23 @@ namespace ft {
            	 	node_type *uncle = NULL;
                 int colorTmp;
                 
-    			while (n != root_ && !n->black_  && !n->parent->black_) {
+    			while (n != root_ && !n->black_  && !n->parent_->black_) {
 
-        			parent = n->parent;
+        			parent = n->parent_;
         			grandParent = getGrandParent(n);
-        			if (parent == grandParent->left) {
+        			if (parent == grandParent->left_) {
 
-           	 			uncle = grandParent->right;
+           	 			uncle = grandParent->right_;
             			if (uncle && !uncle->black_) {
                 			grandParent->black_ = 0;
                 			parent->black_ = 1;
             			    uncle->black_ = 1;
             			    n = grandParent;
             			} else {
-                			if (n == parent->right) {
+                			if (n == parent->right_) {
                 			    rotateLeft(parent);
                     			n = parent;
-                    			parent = n->parent;
+                    			parent = n->parent_;
                 			}
                 			rotateRight(grandParent);
                 			colorTmp = parent->black_;
@@ -474,17 +465,17 @@ namespace ft {
             			}
         			} else {
 
-            			uncle = grandParent->left;
+            			uncle = grandParent->left_;
             			if (uncle && !uncle->black_) {
             			    grandParent->black_ = 0;
             			    parent->black_ = 1;
             			    uncle->black_ = 1;
             			    n = grandParent;
             			} else {
-                			if (n == parent->left) {
+                			if (n == parent->left_) {
                  			   rotateRight(parent);
                     			n = parent;
-                    			parent = n->parent;
+                    			parent = n->parent_;
                 			}
                 			rotateLeft(grandParent);
                 			colorTmp = parent->black_;
@@ -498,13 +489,13 @@ namespace ft {
             }
 
             node_type *getGrandParent(const node_type *node) const {
-				return (node->parent == NULL ? NULL : node->parent->parent);
+				return (node->parent_ == NULL ? NULL : node->parent_->parent_);
 			}
 
 			size_type nodesAmount(node_type *root) const {
 				if (!root)
 					return 0;
-				return 1 + nodesAmount(root->left) + nodesAmount(root->right);
+				return 1 + nodesAmount(root->left_) + nodesAmount(root->right_);
 			}
 
 

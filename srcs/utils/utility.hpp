@@ -4,8 +4,8 @@
 namespace ft {
     template <typename T1, typename T2>
     struct pair {
-        tpyedef T1  first_type;
-        tpyedef T2  second_type;
+        typedef T1  first_type;
+        typedef T2  second_type;
 
         T1 first;
         T2 second;
@@ -13,7 +13,7 @@ namespace ft {
         pair() : first(T1()), second(T2()) {}
 
         template<typename U, typename V>
-        pair(const pair<U, V>& pr) : first(pr.first), second(p1.second) {}
+        pair(const pair<U, V>& pr) : first(pr.first), second(pr.second) {}
 
         pair(const first_type& a, const second_type& b) : first(a), second(b) {}
 

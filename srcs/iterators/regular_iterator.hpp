@@ -125,6 +125,7 @@ namespace ft {
 	regular_iterator<Iterator> operator+(typename regular_iterator<Iterator>::difference_type n, const regular_iterator<Iterator>& it) {
 		return (regular_iterator<Iterator>(it.base() + n));
 	}
+
 }
 
 #endif
