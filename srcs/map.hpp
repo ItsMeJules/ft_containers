@@ -3,6 +3,7 @@
 
 # include <memory>
 # include "utils/utility.hpp"
+# include "utils/algorithm.hpp"
 # include "utils/functional.hpp"
 # include "utils/rb_tree.hpp"
 # include "iterators/rb_tree_iterator.hpp"

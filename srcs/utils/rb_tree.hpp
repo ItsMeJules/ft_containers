@@ -174,8 +174,8 @@ namespace ft {
 					return (NULL);
 
 				node_type *tmp = root_;
-				while (tmp->left)
-					tmp = tmp->left;
+				while (tmp->left_)
+					tmp = tmp->left_;
 				return (tmp->data_);
 			}
 
@@ -214,6 +214,14 @@ namespace ft {
 			}
 
         private:
+			node_type *smallest(node_type *node) const {
+				if (!node)
+					return (NULL);
+				while (node->left_)
+					node = node->left_;
+				return node;
+			}
+
 			node_type *leftMostNode(node_type *node) const {
 				if (!node)
 					return (NULL);
@@ -262,7 +270,6 @@ namespace ft {
 				} catch (std::bad_alloc& e) {
 					destroyNode(node);
 					node = NULL;
-					std::cout << "Error when trying to make a new node.\n" << e.what() << std::endl;
 				}
 				return node;
 			}
@@ -286,8 +293,8 @@ namespace ft {
      		   		x = z->left_;
         			rbTransplant(z, z->left_);
     			} else {
-        			y = min(z->right_);
-        			blackTmp = y->color;
+        			y = smallest(z->right_);
+        			blackTmp = y->black_;
         			x = y->right_;
         			if (x && y->parent_ == z)
             			x->parent_ = y;
@@ -297,9 +304,9 @@ namespace ft {
             			y->right_->parent_ = y;
         			}	
         			rbTransplant(z, y);
-        			y->left = z->left;
-        			y->left->parent_ = y;
-        			y->color = z->color;
+        			y->left_ = z->left_;
+        			y->left_->parent_ = y;
+        			y->black_ = z->black_;
     			}
     			if (blackTmp == 1)
     		    	deleteFix(x); 
@@ -371,7 +378,8 @@ namespace ft {
 					u->parent_->left_ = v;
 				else
 					u->parent_->right_ = v;
-				v->parent_ = u->parent_;
+				if (v)
+					v->parent_ = u->parent_;
 			}
 
             void rotateLeft(node_type *x) {
