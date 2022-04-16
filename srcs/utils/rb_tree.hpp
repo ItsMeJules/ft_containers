@@ -91,7 +91,7 @@ namespace ft {
 				size_type amount = 0;
 				node_type *node = findNode(root_, value);
 
-				root_->parent = NULL;
+				root_->parent_ = NULL;
 				while (node) {
 					deleteNode(node);
 					amount++;
@@ -105,7 +105,7 @@ namespace ft {
 				node_type *node = position.base();
 
 				if (node && node != end_) {
-					root_->parent = NULL;
+					root_->parent_ = NULL;
 					deleteNode(node);
 					updateRootEnd();
 				}
@@ -279,12 +279,12 @@ namespace ft {
     			node_type *y = z;
     			int blackTmp = y->black_;
 
-    			if (!z->left) {
-        			x = z->right;
+    			if (!z->left_) {
+        			x = z->right_;
         			rbTransplant(z, z->right_);
     			} else if (!z->right_) {
-     		   		x = z->left;
-        			rbTransplant(z, z->left);
+     		   		x = z->left_;
+        			rbTransplant(z, z->left_);
     			} else {
         			y = min(z->right_);
         			blackTmp = y->color;
@@ -310,7 +310,7 @@ namespace ft {
 				node_type *s = NULL;
 
 				while (node && node != root_ && node->black_ == 1) {
-        			if (node == node->parent_->left) {
+        			if (node == node->parent_->left_) {
 
             			s = node->parent_->right_;
             			if (s->black_ == 0) {
@@ -319,7 +319,7 @@ namespace ft {
                 			rotateLeft(node->parent_);
                 			s = node->parent_->right_;
             			}
-            			if (s->left->black_ == 1 && s->right_->black_ == 1) {
+            			if (s->left_->black_ == 1 && s->right_->black_ == 1) {
             				s->black_ = 0;
             	    		node = node->parent_;
             			} else if (s->right_->black_ == 1) {
@@ -343,11 +343,11 @@ namespace ft {
             			    rotateRight(node->parent_);
             			    s = node->parent_->left_;
             			}
-            			if (s->right->black_ == 1 && s->left_->black_ == 1) {
+            			if (s->right_->black_ == 1 && s->left_->black_ == 1) {
             				s->black_ = 0;
                 			node = node->parent_;
             			} else if (s->left_->black_ == 1) {
-            			    s->right->black_ = 1;
+            			    s->right_->black_ = 1;
             			    s->black_ = 0;
             			    rotateLeft(s);
            		 		    s = node->parent_->left_;
@@ -367,10 +367,10 @@ namespace ft {
 			void rbTransplant(node_type *u, node_type *v) {
 				if (u->parent_ == NULL)
 					root_ = v;
-				else if (u == u->parent_->left)
-					u->parent_->left = v;
+				else if (u == u->parent_->left_)
+					u->parent_->left_ = v;
 				else
-					u->parent_->right = v;
+					u->parent_->right_ = v;
 				v->parent_ = u->parent_;
 			}
 

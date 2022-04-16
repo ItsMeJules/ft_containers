@@ -53,7 +53,7 @@ namespace ft {
 			}
 
 			reference operator*() const {
-				return current_->value;
+				return current_->data_;
 			}
 
 			// https://stackoverflow.com/questions/12684191/implementing-an-iterator-over-binary-or-arbitrary-tree-using-c-11
