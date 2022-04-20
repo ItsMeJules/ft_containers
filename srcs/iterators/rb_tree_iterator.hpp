@@ -144,6 +144,8 @@ namespace ft {
 
 			template <typename Iter>
 			rb_tree_const_iterator(const rb_tree_const_iterator<Iter>& it) : current_(it.base()) {}
+			template <typename Iter>
+			rb_tree_const_iterator(const rb_tree_iterator<Iter>& it) : current_(it.base()) {}
 
 			~rb_tree_const_iterator() {}
 

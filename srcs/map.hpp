@@ -196,7 +196,7 @@ namespace ft {
 			iterator upper_bound(const key_type& k) {
 				iterator it = begin();
 
-				while (it != end() && !tree_.get_comparator()(*it, ft::make_pair(k, mapped_type())))
+				while (it != end() && !tree_.get_comparator()(ft::make_pair(k, mapped_type()), *it))
 					it++;
 				return it;
 			}
@@ -204,7 +204,7 @@ namespace ft {
 			const_iterator upper_bound(const key_type& k) const {
 				const_iterator it = begin();
 
-				while (it != end() && !tree_.get_comparator()(*it, ft::make_pair(k, mapped_type())))
+				while (it != end() && !tree_.get_comparator()(ft::make_pair(k, mapped_type()), *it))
 					it++;
 				return it;
 			}
