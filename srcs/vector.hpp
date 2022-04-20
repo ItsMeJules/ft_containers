@@ -141,13 +141,13 @@ namespace ft {
             reference at(size_type n) {
                 if (n >= size_)
                     throw std::out_of_range("Out of range!");
-                return operator[](n);
+                return (*(start_ + n));
             }
 
             const_reference at(size_type n) const {
                 if (n >= size_)
                     throw std::out_of_range("Out of range!");
-                return operator[](n);
+                return (*(start_ + n));
             }
 
             reference front() {
@@ -272,9 +272,13 @@ namespace ft {
             }
 
             iterator erase(iterator position) {
+                if (position == end() - 1) {
+                    pop_back();
+                    return position;
+                }
                 alloc_.destroy(&(*position));
                 for (iterator it = position; it != end() - 1; it++) {
-                    alloc_.construct(&(*it), (*it) + 1);
+                    alloc_.construct(&(*it), *(it + 1));
                     alloc_.destroy(&(*(it + 1)));
                 }
                 size_--;
