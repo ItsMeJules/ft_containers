@@ -29,23 +29,28 @@ namespace ft {
             typedef std::size_t									    size_type;
 
             explicit vector(const allocator_type& alloc = allocator_type()) : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {}
-            explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
-                : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {
+            explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
+                : start_(NULL), size_(0), capacity_(0), alloc_(alloc)
+            {
                     assign(n, val);
-                }
+            }
 
             template <class InputIterator>
-            vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
-                : start_(NULL), size_(0), capacity_(0), alloc_(alloc) {
+            vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
+                : start_(NULL), size_(0), capacity_(0), alloc_(alloc)
+            {
                     assign(first, last);
-                }
-            vector(const vector& x) : start_(NULL), size_(0), capacity_(0), alloc_(x.alloc_) {
+            }
+
+            vector(const vector& x)
+                : start_(NULL), size_(0), capacity_(0), alloc_(x.alloc_)
+            {
                 if (this != &x)
                     *this = x;
             }
 
             /* DESTRUCTOR */
-            ~vector(void) {
+            ~vector() {
                 for (iterator it = begin(); it != end(); it++)
                     alloc_.destroy(&(*it));
                 alloc_.deallocate(start_, capacity_);
@@ -116,7 +121,7 @@ namespace ft {
 
             void reserve(size_type n) {
                 if (capacity_ <= n) {
-                    vector<T> tmp(*this);
+                    vector tmp(begin(), end());
 
                     clear();
                     alloc_.deallocate(start_, size_);
