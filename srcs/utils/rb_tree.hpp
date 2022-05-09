@@ -91,7 +91,8 @@ namespace ft {
 				size_type amount = 0;
 				node_type *node = findNode(root_, value);
 
-				root_->parent_ = NULL;
+				if (root_)
+					root_->parent_ = NULL;
 				while (node) {
 					deleteNode(node);
 					amount++;

@@ -3,6 +3,7 @@
 
 # include <memory>
 # include "utils/functional.hpp"
+# include "utils/algorithm.hpp"
 # include "utils/utility.hpp"
 # include "utils/rb_tree.hpp"
 
@@ -22,9 +23,9 @@ namespace ft {
 
 			typedef ft::rb_btree<value_type, value_compare, allocator_type>	btree_type;
 
-			typedef typename btree_type::const_iterator						iterator;
+			typedef typename btree_type::iterator							iterator;
 			typedef typename btree_type::const_iterator						const_iterator;
-			typedef typename btree_type::const_reverse_iterator				reverse_iterator;
+			typedef typename btree_type::reverse_iterator					reverse_iterator;
 			typedef typename btree_type::const_reverse_iterator				const_reverse_iterator;
 			typedef typename btree_type::difference_type					difference_type;
 			typedef	typename btree_type::size_type							size_type;
@@ -104,7 +105,7 @@ namespace ft {
 				return (it == tree_.end() ? ft::make_pair(tree_.insert(val), true) : ft::make_pair(it, false));
 			}
 
-			iterator insert(iterator position, const value_type & val) {
+			iterator insert(iterator position, const value_type& val) {
 				iterator it = tree_.find(val);
 
 				return (it == tree_.end() ? tree_.insert(position, val) : it);
@@ -123,15 +124,15 @@ namespace ft {
 				tree_.erase(position);
 			}
 
-			size_type erase(const key_type& k) {
-				return tree_.erase(ft::make_pair(k, mapped_type()));
+			size_type erase(const value_type& val) {
+				return tree_.erase(val);
 			}
 
 			void erase(iterator first, iterator last) {
 				tree_.erase(first, last);
 			}
 
-			void swap(map& x) {
+			void swap(set& x) {
 				tree_.swap(x.tree_);
 			}
 
@@ -141,7 +142,7 @@ namespace ft {
 
 			//OBSERVER
 			key_compare	key_comp() const {
-				return tree_.get_comparator().comp;
+				return tree_.get_comparator();
 			}
 
 			value_compare value_comp() const {
@@ -149,56 +150,32 @@ namespace ft {
 			}
 
 			//OPERATIONS
-			iterator find(const key_type& k) {
-				return tree_.find(ft::make_pair(k, mapped_type()));
+			iterator find(const value_type& val) {
+				return tree_.find(val);
 			}
 
-			const_iterator find(const key_type& k) const {
-				return tree_.find(ft::make_pair(k, mapped_type()));
+			size_type count(const value_type& val) const {
+				return (tree_.find(val) != tree_.end() ? 1 : 0);
 			}
 
-			size_type count(const key_type& k) const {
-				return (tree_.find(ft::make_pair(k, mapped_type())) != tree_.end() ? 1 : 0);
-			}
-
-			iterator lower_bound(const key_type& k) {
-				iterator it = begin();
-
-				while (it != end() && tree_.get_comparator()(*it, ft::make_pair(k, mapped_type())))
-					it++;
-				return it;
-			}
-
-			const_iterator lower_bound(const key_type& k) const {
+			iterator lower_bound(const value_type& val) const {
 				const_iterator it = begin();
 
-				while (it != end() && tree_.get_comparator()(*it, ft::make_pair(k, mapped_type())))
+				while (it != end() && tree_.get_comparator()(*it, val))
 					it++;
-				return it;
+				return iterator(it.base());
 			}
 
-			iterator upper_bound(const key_type& k) {
-				iterator it = begin();
-
-				while (it != end() && !tree_.get_comparator()(ft::make_pair(k, mapped_type()), *it))
-					it++;
-				return it;
-			}
-
-			const_iterator upper_bound(const key_type& k) const {
+			iterator upper_bound(const value_type& val) const {
 				const_iterator it = begin();
 
-				while (it != end() && !tree_.get_comparator()(ft::make_pair(k, mapped_type()), *it))
+				while (it != end() && !tree_.get_comparator()(val, *it))
 					it++;
-				return it;
+				return iterator(it.base());
 			}
 
-			ft::pair<const_iterator, const_iterator> equal_range(const key_type& k) const {
-				return ft::pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k));
-			}
-
-			ft::pair<iterator, iterator> equal_range(const key_type& k) {
-				return ft::pair<iterator, iterator>(lower_bound(k), upper_bound(k));
+			ft::pair<iterator, iterator> equal_range(const value_type& val) const {
+				return ft::pair<iterator, iterator>(lower_bound(val), upper_bound(val));
 			}
 
 			allocator_type get_allocator() const {
