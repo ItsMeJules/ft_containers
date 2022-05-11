@@ -23,9 +23,9 @@ namespace ft {
 
 			typedef ft::rb_btree<value_type, value_compare, allocator_type>	btree_type;
 
-			typedef typename btree_type::iterator							iterator;
+			typedef typename btree_type::const_iterator						iterator;
 			typedef typename btree_type::const_iterator						const_iterator;
-			typedef typename btree_type::reverse_iterator					reverse_iterator;
+			typedef typename btree_type::const_reverse_iterator				reverse_iterator;
 			typedef typename btree_type::const_reverse_iterator				const_reverse_iterator;
 			typedef typename btree_type::difference_type					difference_type;
 			typedef	typename btree_type::size_type							size_type;
@@ -150,8 +150,8 @@ namespace ft {
 			}
 
 			//OPERATIONS
-			iterator find(const value_type& val) {
-				return tree_.find(val);
+			iterator find(const value_type& val) const {
+				return iterator(tree_.find(val).base());
 			}
 
 			size_type count(const value_type& val) const {
