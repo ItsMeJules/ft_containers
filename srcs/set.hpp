@@ -102,13 +102,17 @@ namespace ft {
 			ft::pair<iterator, bool> insert(const value_type& val) {
 				iterator it = tree_.find(val);
 
-				return (it == tree_.end() ? ft::make_pair(tree_.insert(val), true) : ft::make_pair(it, false));
+				if (it == tree_.end())
+					return ft::make_pair(tree_.insert(val), true);
+				else
+					return ft::make_pair(it, false);
 			}
 
 			iterator insert(iterator position, const value_type& val) {
+				(void)position;
 				iterator it = tree_.find(val);
 
-				return (it == tree_.end() ? tree_.insert(position, val) : it);
+				return (it == tree_.end() ? tree_.insert(val) : it);
 			}
 
 			template <class InputIterator>
@@ -121,7 +125,9 @@ namespace ft {
 			}
 
 			void erase(iterator position) {
-				tree_.erase(position);
+				value_type val = *position;
+
+				tree_.erase(val);
 			}
 
 			size_type erase(const value_type& val) {
@@ -129,7 +135,13 @@ namespace ft {
 			}
 
 			void erase(iterator first, iterator last) {
-				tree_.erase(first, last);
+				value_type val;
+
+				while (first != last) {
+					val = *first;
+					first++;
+					tree_.erase(val);
+				}
 			}
 
 			void swap(set& x) {
@@ -151,7 +163,7 @@ namespace ft {
 
 			//OPERATIONS
 			iterator find(const value_type& val) const {
-				return iterator(tree_.find(val).base());
+				return tree_.find(val);
 			}
 
 			size_type count(const value_type& val) const {
@@ -163,7 +175,7 @@ namespace ft {
 
 				while (it != end() && tree_.get_comparator()(*it, val))
 					it++;
-				return iterator(it.base());
+				return it;
 			}
 
 			iterator upper_bound(const value_type& val) const {
@@ -171,7 +183,7 @@ namespace ft {
 
 				while (it != end() && !tree_.get_comparator()(val, *it))
 					it++;
-				return iterator(it.base());
+				return it;
 			}
 
 			ft::pair<iterator, iterator> equal_range(const value_type& val) const {
